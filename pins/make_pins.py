@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Generate Pinterest pin images (1000x1500) and a CSV from post frontmatter.
+"""Generate Pinterest pin images (1000x1500), CSV, and RSS 2.0 feed from post frontmatter.
 
-Usage: python pins/make_pins.py [--start YYYY-MM-DD] [--every DAYS]
-Output: pins/out/<slug>-<n>.png and pins/out/pins.csv
+Usage: python pins/make_pins.py [--start YYYY-MM-DD] [--every DAYS] [--today YYYY-MM-DD]
+Output: pins/out/<slug>-<n>.png, pins/out/pins.csv, and pins/out/feed.xml
 """
 import argparse
 import csv
 import json
-from datetime import date, timedelta
+import xml.etree.ElementTree as ET
+from datetime import date, datetime, timedelta, timezone
+from email.utils import format_datetime
 from pathlib import Path
 
 import yaml
@@ -116,41 +118,109 @@ def make_pin(title, style_name, site, path):
     img.save(path, optimize=True)
 
 
+def rfc822(day):
+    """Format a date as an RFC 822 UTC timestamp matching the 01:00 UTC build."""
+    return format_datetime(
+        datetime(day.year, day.month, day.day, 1, 0, 0, tzinfo=timezone.utc)
+    )
+
+
+def write_feed(site, base, items, today, path):
+    """Write an RSS 2.0 feed of due pins for Pinterest Auto-publish."""
+    rss = ET.Element("rss", version="2.0")
+    channel = ET.SubElement(rss, "channel")
+    ET.SubElement(channel, "title").text = site["name"]
+    ET.SubElement(channel, "link").text = f"{base}/"
+    ET.SubElement(channel, "description").text = site["description"]
+    ET.SubElement(channel, "language").text = "en"
+    ET.SubElement(channel, "lastBuildDate").text = rfc822(today)
+
+    for item in items:
+        el = ET.SubElement(channel, "item")
+        ET.SubElement(el, "title").text = item["title"]
+        ET.SubElement(el, "description").text = item["description"]
+        ET.SubElement(el, "link").text = item["link"]
+        guid = ET.SubElement(el, "guid", isPermaLink="false")
+        guid.text = item["guid"]
+        ET.SubElement(el, "pubDate").text = rfc822(item["pub_date"])
+        ET.SubElement(
+            el,
+            "enclosure",
+            url=item["media_url"],
+            type="image/png",
+            length=str(item["length"]),
+        )
+
+    ET.indent(rss, space="  ")
+    ET.ElementTree(rss).write(path, encoding="utf-8", xml_declaration=True)
+
+
 def main():
+    site = json.loads((ROOT / "data/site.json").read_text())
     ap = argparse.ArgumentParser()
-    ap.add_argument("--start", default=str(date.today() + timedelta(days=1)))
-    ap.add_argument("--every", type=int, default=2, help="days between pins")
+    ap.add_argument(
+        "--start",
+        default=site.get("pin_start") or str(date.today() + timedelta(days=1)),
+    )
+    ap.add_argument(
+        "--every",
+        type=int,
+        default=site.get("pin_every", 2),
+        help="days between pins",
+    )
+    ap.add_argument(
+        "--today",
+        default=str(date.today()),
+        help="override today's date (YYYY-MM-DD) for feed drip testing",
+    )
     args = ap.parse_args()
 
-    site = json.loads((ROOT / "data/site.json").read_text())
     base = site["base_url"].rstrip("/")
     OUT.mkdir(parents=True, exist_ok=True)
     when = date.fromisoformat(args.start)
+    today = date.fromisoformat(args.today)
     rows = []
+    feed_items = []
 
     for path in sorted((ROOT / "content/posts").glob("*.md")):
         _, fm, _ = path.read_text(encoding="utf-8").split("---", 2)
         meta = yaml.safe_load(fm)
         if meta.get("draft"):
             continue
+        held = bool(meta.get("pin_hold"))
+        article_url = f"{base}/{path.stem}/"
         for n, pin in enumerate(meta.get("pins", []), start=1):
             name = f"{path.stem}-{n}.png"
-            make_pin(pin["title"], pin.get("style", "navy"), site, OUT / name)
+            png_path = OUT / name
+            make_pin(pin["title"], pin.get("style", "navy"), site, png_path)
+            media_url = f"{base}/pins/{name}"
             rows.append({
                 "Title": pin["title"],
-                "Media URL": f"{base}/pins/{name}",
+                "Media URL": media_url,
                 "Pinterest board": site["pinterest_board"],
                 "Description": pin["description"],
-                "Link": f"{base}/{path.stem}/",
+                "Link": article_url,
                 "Publish date": when.isoformat(),
             })
+            if not held and when <= today:
+                feed_items.append({
+                    "title": pin["title"],
+                    "description": pin["description"],
+                    "link": article_url,
+                    "media_url": media_url,
+                    "length": png_path.stat().st_size,
+                    "guid": f"{path.stem}-{n}",
+                    "pub_date": when,
+                })
             when += timedelta(days=args.every)
 
-    with open(OUT / "pins.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-        writer.writeheader()
-        writer.writerows(rows)
-    print(f"Made {len(rows)} pin(s) in pins/out/")
+    if rows:
+        with open(OUT / "pins.csv", "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+            writer.writeheader()
+            writer.writerows(rows)
+    write_feed(site, base, feed_items, today, OUT / "feed.xml")
+    print(f"Made {len(rows)} pin(s), {len(feed_items)} feed item(s) in pins/out/")
 
 
 if __name__ == "__main__":

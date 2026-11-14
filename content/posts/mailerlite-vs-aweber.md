@@ -3,6 +3,7 @@ title: "MailerLite vs AWeber: pricing and features as your shop list grows"
 description: "How MailerLite and AWeber compare at 500, 1,000, and 2,500 subscribers: monthly vs yearly pricing, branding rules, automation caps, and support."
 date: 2026-11-14
 checked: 2026-11-14
+pin_hold: true
 pins:
   - title: "MailerLite vs AWeber: prices at 500 to 2,500 contacts"
     description: "Monthly and yearly pricing for MailerLite Comfort and Power vs AWeber Lite and Plus at 500, 1,000 and 2,500 subscribers. Contains affiliate links."
