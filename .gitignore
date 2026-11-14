@@ -1,0 +1,20 @@
+dist/
+pins/out/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+Claude outputs/
+*.zip
+.DS_Store
+
+# Internal agent/workflow files (kept locally, not tracked in repo)
+handoff/
+anti-slop/
+AGENTS.md
+DESIGN.md
+content/topics.md
+
+

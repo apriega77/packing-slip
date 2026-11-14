@@ -1,0 +1,221 @@
+/* Reasons for each choice are recorded in DESIGN.md. */
+:root {
+  --paper: #f1f5f6;
+  --sheet: #ffffff;
+  --ink: #14233b;
+  --ink-soft: #4a5a72;
+  --air-red: #c9362c;
+  --air-blue: #1f4e9a;
+  --marigold: #f0b429;
+  --rule: #b9c4cf;
+  --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --body: "Source Serif 4", Georgia, serif;
+  --measure: 40rem;
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 112.5%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  line-height: 1.65;
+}
+
+/* Interaction basics, set once. */
+a[href] { cursor: pointer; }
+a { color: var(--air-blue); text-underline-offset: 0.15em; text-decoration-thickness: 1px; }
+a:hover { color: var(--air-red); text-decoration-thickness: 3px; }
+a:active { color: var(--ink); text-decoration-style: dashed; }
+a:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* The airmail edge is the identity motif and the one loud element. */
+.airmail {
+  height: 14px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--air-red) 0 18px,
+    var(--sheet) 18px 30px,
+    var(--air-blue) 30px 48px,
+    var(--sheet) 48px 60px
+  );
+}
+
+.masthead,
+main,
+.colophon {
+  max-width: calc(var(--measure) + 3rem);
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.masthead-name {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.masthead-name:hover { color: var(--air-red); }
+
+.site-nav ul {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+.site-nav a:hover { color: var(--air-red); text-decoration: underline; text-decoration-thickness: 3px; }
+.site-nav a[aria-current="page"] {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+}
+
+h1, h2 {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+/* Home */
+.intro { padding: 3.5rem 0 2.5rem; }
+.intro h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2rem, 6vw, 3.25rem);
+}
+.intro p { margin: 0; max-width: 34rem; color: var(--ink-soft); }
+
+.slip {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  padding: 1.5rem 1.5rem 0.5rem;
+  margin-bottom: 4rem;
+}
+.slip-heading { margin: 0 0 0.5rem; font-size: 1.1rem; letter-spacing: -0.01em; }
+.slip-lines { list-style: none; margin: 0; padding: 0; }
+.slip-lines li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px dashed var(--rule);
+}
+.slip-lines a { display: block; text-decoration: none; color: var(--ink); }
+.slip-title {
+  display: block;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  line-height: 1.25;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+.slip-lines a:hover .slip-title { color: var(--air-red); text-decoration-thickness: 4px; }
+.slip-lines a:active .slip-title { text-decoration-style: dashed; }
+.slip-desc { display: block; margin-top: 0.4rem; color: var(--ink-soft); font-size: 0.95rem; }
+.slip-lines time { color: var(--ink-soft); font-size: 0.85rem; white-space: nowrap; }
+.slip-empty { margin: 0; padding: 1rem 0 1.5rem; border-top: 1px dashed var(--rule); }
+
+/* Post */
+.post { padding: 3rem 0 4rem; }
+.post-head h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 6.5vw, 3.4rem);
+}
+.post-meta { margin: 0 0 1.5rem; color: var(--ink-soft); font-size: 0.9rem; }
+
+/* The affiliate notice carries the single accent color. */
+.notice {
+  margin: 0 0 2rem;
+  padding: 0.85rem 1rem;
+  background: var(--marigold);
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.notice a { color: var(--ink); }
+
+.prose > * { max-width: var(--measure); }
+.prose h2 { margin: 2.75rem 0 0.75rem; font-size: 1.6rem; }
+.prose p { margin: 0 0 1.15rem; }
+.prose ul { margin: 0 0 1.15rem; padding-left: 1.2rem; }
+.prose li { margin-bottom: 0.4rem; }
+.prose code { font-size: 0.9em; background: var(--sheet); padding: 0.1em 0.3em; }
+
+/* Comparison tables read like the lines of a packing slip. */
+.prose .table-wrap {
+  max-width: none;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+}
+.prose .table-wrap:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.prose table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.prose th, .prose td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px dashed var(--rule);
+}
+.prose thead th {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1rem;
+  border-bottom: 2px solid var(--ink);
+}
+.prose tbody td:first-child { color: var(--ink-soft); width: 28%; }
+.prose tbody tr:last-child td { border-bottom: 0; }
+
+.colophon {
+  padding-top: 1rem;
+  padding-bottom: 3rem;
+  border-top: 2px solid var(--ink);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+.colophon p { margin: 0 0 0.4rem; }
+.colophon a { display: inline-flex; align-items: center; min-height: 44px; }
+
+@media (max-width: 34rem) {
+  html { font-size: 106%; }
+  .slip-lines li { grid-template-columns: 1fr; }
+}

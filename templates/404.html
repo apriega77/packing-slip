@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Page not found | {{ site.name }}{% endblock %}
+{% block main %}
+<article class="post">
+  <header class="post-head">
+    <h1>This page does not exist</h1>
+  </header>
+  <div class="prose">
+    <p>The address may be mistyped, or we moved the guide. <a href="{{ root }}">See all guides</a></p>
+  </div>
+</article>
+{% endblock %}

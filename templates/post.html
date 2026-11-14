@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} | {{ site.name }}{% endblock %}
+{% block description %}{{ post.description }}{% endblock %}
+{% block head %}
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ post.title }}">
+<meta property="og:description" content="{{ post.description }}">
+<meta property="og:url" content="{{ post.url }}">
+{% endblock %}
+{% block main %}
+<article class="post">
+  <header class="post-head">
+    <h1>{{ post.title }}</h1>
+    <p class="post-meta">Published <time datetime="{{ post.date }}">{{ post.date | nice_date }}</time>{% if post.checked %}. Prices checked {{ post.checked | nice_date }}{% endif %}.</p>
+    {% if post.has_affiliate %}
+    <p class="notice">This guide contains affiliate links. If you sign up through one, we may earn a commission at no extra cost to you. <a href="{{ root }}disclosure/">Read the disclosure</a></p>
+    {% endif %}
+  </header>
+  <div class="prose">
+  {{ post.html | safe }}
+  </div>
+</article>
+{% endblock %}

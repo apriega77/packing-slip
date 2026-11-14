@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ site.name }}: {{ site.tagline }}{% endblock %}
+{% block main %}
+<section class="intro">
+  <h1>Your shop's buyers belong to the marketplace. Your email list belongs to you.</h1>
+  <p>Guides to starting and running an email list for Etsy sellers and other small online shops. We read prices and limits from each company's own page and date them.</p>
+</section>
+<section class="slip" aria-labelledby="guides-heading">
+  <h2 class="slip-heading" id="guides-heading">Guides</h2>
+  {% if posts %}
+  <ul class="slip-lines">
+    {% for post in posts %}
+    <li>
+      <a href="{{ root }}{{ post.slug }}/">
+        <span class="slip-title">{{ post.title }}</span>
+        <span class="slip-desc">{{ post.description }}</span>
+      </a>
+      <time datetime="{{ post.date }}">{{ post.date | nice_date }}</time>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="slip-empty">No guides are published yet. A guide appears here once we have checked its prices against each company's pricing page.</p>
+  {% endif %}
+</section>
+{% endblock %}

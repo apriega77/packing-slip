@@ -1,0 +1,18 @@
+{
+  "_readme": "Ganti nilai 'url' dengan link affiliate kamu, lalu ubah 'affiliate' menjadi true. Selama 'affiliate' masih false, link mengarah ke situs resmi tanpa kode affiliate.",
+  "systeme": {
+    "name": "Systeme.io",
+    "url": "https://systeme.io/?sa=sa0286403946d2d6b27730c02f46cb98151895dfeb",
+    "affiliate": true
+  },
+  "mailerlite": {
+    "name": "MailerLite",
+    "url": "https://www.mailerlite.com/",
+    "affiliate": false
+  },
+  "aweber": {
+    "name": "AWeber",
+    "url": "https://www.aweber.com/",
+    "affiliate": false
+  }
+}
