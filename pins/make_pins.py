@@ -177,7 +177,11 @@ def main():
 
     base = site["base_url"].rstrip("/")
     OUT.mkdir(parents=True, exist_ok=True)
-    when = date.fromisoformat(args.start)
+    start = date.fromisoformat(args.start)
+    # Pins listed in site.json "pin_now" are released on the start date;
+    # all other pins follow the normal drip from start + every.
+    now_set = set(site.get("pin_now", []))
+    when = start + timedelta(days=args.every) if now_set else start
     today = date.fromisoformat(args.today)
     rows = []
     feed_items = []
@@ -191,6 +195,8 @@ def main():
         article_url = f"{base}/{path.stem}/"
         for n, pin in enumerate(meta.get("pins", []), start=1):
             name = f"{path.stem}-{n}.png"
+            guid = f"{path.stem}-{n}"
+            pin_date = start if guid in now_set else when
             png_path = OUT / name
             make_pin(pin["title"], pin.get("style", "navy"), site, png_path)
             media_url = f"{base}/pins/{name}"
@@ -200,19 +206,20 @@ def main():
                 "Pinterest board": site["pinterest_board"],
                 "Description": pin["description"],
                 "Link": article_url,
-                "Publish date": when.isoformat(),
+                "Publish date": pin_date.isoformat(),
             })
-            if not held and when <= today:
+            if not held and pin_date <= today:
                 feed_items.append({
                     "title": pin["title"],
                     "description": pin["description"],
                     "link": article_url,
                     "media_url": media_url,
                     "length": png_path.stat().st_size,
-                    "guid": f"{path.stem}-{n}",
-                    "pub_date": when,
+                    "guid": guid,
+                    "pub_date": pin_date,
                 })
-            when += timedelta(days=args.every)
+            if guid not in now_set:
+                when += timedelta(days=args.every)
 
     if rows:
         with open(OUT / "pins.csv", "w", newline="", encoding="utf-8") as f:
